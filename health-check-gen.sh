@@ -5,7 +5,7 @@ if [[ "$EUID" -ne 0 ]]; then
     exit 1;
 fi
 
-REPORTDATE="$(date +%d-%m-%y-%H%M)";
+REPORTDATE="$(date +%Y-%m-%d-%H%M)";
 DIR_LOG="/var/log/health-report/"
 if [[ ! -e $DIR_LOG ]]; then
     mkdir $DIR_LOG

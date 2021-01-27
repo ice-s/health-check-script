@@ -13,7 +13,7 @@
 #------variables used------#
 S="************************************"
 D="-------------------------------------"
-COLOR="y"
+COLOR="no"
 TIME1=$(date -I)
 TIME2=$(date +%H:%M:%S)
 RAM=$(free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }')
@@ -163,24 +163,24 @@ echo -e "Current Load Average : $(uptime|grep -o "load average.*"|awk '{print $3
 #------Print most recent 3 reboot events if available----#
 echo -e "\n\nMost Recent 3 Reboot Events"
 echo -e "$D$D"
-last -x 2> /dev/null|grep reboot 1> /dev/null && /usr/bin/last -x 2> /dev/null|grep reboot|head -3 || \
+last -x 2> /dev/null|grep reboot 1> /dev/null && /usr/bin/last -x 2> /dev/null|grep reboot|head -6 || \
 echo -e "No reboot events are recorded."
 
 #------Print most recent 3 shutdown events if available-----#
 echo -e "\n\nMost Recent 3 Shutdown Events"
 echo -e "$D$D"
-last -x 2> /dev/null|grep shutdown 1> /dev/null && /usr/bin/last -x 2> /dev/null|grep shutdown|head -3 || \
+last -x 2> /dev/null|grep shutdown 1> /dev/null && /usr/bin/last -x 2> /dev/null|grep shutdown|head -6 || \
 echo -e "No shutdown events are recorded."
 
 #--------Print top 5 Memory & CPU consumed process threads---------#
 #--------excludes current running program which is hwlist----------#
 echo -e "\n\nTop 5 Memory Resource Hog Processes"
 echo -e "$D$D"
-ps -eo pmem,pid,ppid,user,stat,args --sort=-pmem|grep -v $$|head -6|sed 's/$/\n/'
+ps -eo pmem,pid,ppid,user,stat,args --sort=-pmem|grep -v $$|head -16|sed 's/$/\n/'
 
 echo -e "\nTop 5 CPU Resource Hog Processes"
 echo -e "$D$D"
-ps -eo pcpu,pid,ppid,user,stat,args --sort=-pcpu|grep -v $$|head -6|sed 's/$/\n/'
+ps -eo pcpu,pid,ppid,user,stat,args --sort=-pcpu|grep -v $$|head -16|sed 's/$/\n/'
 
 echo -e "NOTE:- If any of the above fields are marked as \"blank\" or \"NONE\" or \"UNKNOWN\" or \"Not Available\" or \"Not Specified\"
 that means either there is no value present in the system for these fields, otherwise that value may not be available,

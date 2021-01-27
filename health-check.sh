@@ -14,7 +14,13 @@
 S="************************************"
 D="-------------------------------------"
 COLOR="y"
-
+TIME1=$(date -I)
+TIME2=$(date +%H:%M:%S)
+RAM=$(free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }')
+LOAD=$(uptime | awk -F'[a-z]:''{ print $2}')
+DISK=$(df -h | awk '$NF=="/"{printf "%d/%dGB (%s)\n", $3,$2,$5}')
+CPU=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')
+UPTIME=$(uptime | awk -F'( |,|:)+' '{if ($7=="min") m=$6; else {if ($7~/^day/) {d=$6;h=$8;m=$9} else {h=$6;m=$7}}} {print d+0,"days,",h+0,"hours,",m+0,"minutes."}')
 MOUNT=$(mount|egrep -iw "ext4|ext3|xfs|gfs|gfs2|btrfs"|grep -v "loop"|sort -u -t' ' -k1,2)
 FS_USAGE=$(df -PThl -x tmpfs -x iso9660 -x devtmpfs -x squashfs|awk '!seen[$1]++'|sort -k6n|tail -n +2)
 IUSAGE=$(df -iPThl -x tmpfs -x iso9660 -x devtmpfs -x squashfs|awk '!seen[$1]++'|sort -k6n|tail -n +2)
@@ -38,25 +44,21 @@ echo -e "\tSystem Health Status"
 echo -e "$S"
 
 #--------Print Operating System Details--------#
-hostname -f &> /dev/null && printf "Hostname : $(hostname -f)" || printf "Hostname : $(hostname -s)"
+hostname -f &> /dev/null && printf "Hostname            : $(hostname -f)" || printf "Hostname : $(hostname -s)"
 
 echo -en "\nOperating System : "
 [ -f /etc/os-release ] && echo $(egrep -w "NAME|VERSION" /etc/os-release|awk -F= '{ print $2 }'|sed 's/"//g') || cat /etc/system-release
 
-echo -e "Kernel Version :" $(uname -r)
-printf "OS Architecture :"$(arch | grep x86_64 &> /dev/null) && printf " 64 Bit OS\n"  || printf " 32 Bit OS\n"
+echo -e "Kernel Version      :"$(uname -r)
+printf  "OS Architecture     :"$(arch | grep x86_64 &> /dev/null) && printf "64 Bit OS\n"  || printf "32 Bit OS\n"
+echo -e "Current Server time :$TIME1 $TIME2."
+echo -e "Current Load average:$LOAD"
+echo -e "Current CPU usage   :$CPU."
+echo -e "Current RAM usage   :$RAM."
+echo -e "Current Disk usage  :$DISK."
+echo -e "System uptime       :$UPTIME"
+echo -e ""
 
-#--------Print system uptime-------#
-UPTIME=$(uptime)
-echo -en "System Uptime : "
-echo $UPTIME|grep day &> /dev/null
-if [ $? != 0 ]; then
-  echo $UPTIME|grep -w min &> /dev/null && echo -en "$(echo $UPTIME|awk '{print $2" by "$3}'|sed -e 's/,.*//g') minutes" \
- || echo -en "$(echo $UPTIME|awk '{print $2" by "$3" "$4}'|sed -e 's/,.*//g') hours"
-else
-  echo -en $(echo $UPTIME|awk '{print $2" by "$3" "$4" "$5" hours"}'|sed -e 's/,//g')
-fi
-echo -e "\nCurrent System Date & Time : "$(date +%c)
 
 #--------Check for any read-only file systems--------#
 echo -e "\nChecking For Read-only File System[s]"

@@ -16,4 +16,4 @@ fi
 ./health-check.sh 1> $DIR_LOG/health-check-report-$REPORTDATE.txt 2> /dev/null
 echo -e "System Health Check Report For: $REPORTDATE" \
 | mailx -a /var/log/health-report/health-check-report-$REPORTDATE.txt -s \
-'System Health Check Report Attached' user@mail.com
+"System Health Check Report Attached $REPORTDATE" user@mail.com

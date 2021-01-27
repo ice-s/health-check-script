@@ -17,7 +17,7 @@ COLOR="no"
 TIME1=$(date -I)
 TIME2=$(date +%H:%M:%S)
 RAM=$(free -m | awk 'NR==2{printf "%s/%sMB (%.2f%%)\n", $3,$2,$3*100/$2 }')
-LOAD=$(uptime | awk -F'[a-z]:''{ print $2}')
+LOAD=$(uptime | awk -F'[a-z]:' '{ print $2}')
 DISK=$(df -h | awk '$NF=="/"{printf "%d/%dGB (%s)\n", $3,$2,$5}')
 CPU=$(grep 'cpu ' /proc/stat | awk '{usage=($2+$4)*100/($2+$4+$5)} END {print usage "%"}')
 UPTIME=$(uptime | awk -F'( |,|:)+' '{if ($7=="min") m=$6; else {if ($7~/^day/) {d=$6;h=$8;m=$9} else {h=$6;m=$7}}} {print d+0,"days,",h+0,"hours,",m+0,"minutes."}')
@@ -46,7 +46,7 @@ echo -e "$S"
 #--------Print Operating System Details--------#
 hostname -f &> /dev/null && printf "Hostname            : $(hostname -f)" || printf "Hostname : $(hostname -s)"
 
-echo -en "\nOperating System : "
+echo -en "\nOperating System    : "
 [ -f /etc/os-release ] && echo $(egrep -w "NAME|VERSION" /etc/os-release|awk -F= '{ print $2 }'|sed 's/"//g') || cat /etc/system-release
 
 echo -e "Kernel Version      :"$(uname -r)
